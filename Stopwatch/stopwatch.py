@@ -1,12 +1,17 @@
+# Based on https://www.geeksforgeeks.org/create-stopwatch-using-python/
+# Some small changes to adapt to a ms precision stopwatch
 # Python program to illustrate a stop watch
 # using Tkinter
 # importing the required libraries
 import tkinter as Tkinter
 import time
+import sys
 
 PRECISION = 1000 # ms
 UNIT = "ms"
+REFRESH_RATE = 60
 start_time = 0
+REFRESH_TIME = 1
 running = False
 
 def counter_label(label):
@@ -15,8 +20,8 @@ def counter_label(label):
         if running:
             # To manage the initial delay.
             if start_time == 0:            
-                display = "Starting..."
                 start_time = time.time()
+                display = "0" + UNIT
             else:
                 counter = round((time.time() - start_time) * PRECISION)
                 display = str(counter) + UNIT
@@ -28,8 +33,8 @@ def counter_label(label):
             # and then calls the function given as second argument.
             # Generally like here we need to call the 
             # function in which it is present repeatedly.
-            # Delays by 1000ms=1 seconds and call count again.
-            label.after(1, count) 
+            # Delays by monitor period
+            label.after(REFRESH_TIME, count) 
     # Triggering the start of the counter.
     count()     
    
@@ -50,6 +55,15 @@ def Reset(label):
     running = False
     start_time = 0
    
+# init
+n = len(sys.argv)
+if n == 2:
+    REFRESH_RATE = int(sys.argv[1])
+    if REFRESH_RATE > 1000:
+        print("Setting to Max refresh rate (1000)")
+        REFRESH_RATE = 1000
+    REFRESH_TIME = round(1000/REFRESH_RATE)
+        
 root = Tkinter.Tk()
 root["bg"] = "black"
 root.title("Stopwatch")
